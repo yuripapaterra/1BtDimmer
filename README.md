@@ -5,9 +5,9 @@
 
 # One buttom Dimmer Mbed code
 
-> Finite state machine code sample for a dimmer controller by one buttom only
+> Finite state machine code sample for a dimmer controller by one buttom only.
 
-> The controlled light is the green LED LD7, connected to port PA9
+> The controlled light is the green LED LD7, connected to port PA9.
 
 > Made for ST STM32F4 Discovery board using ARM Mbed library and PlatformIO IoT Ecosystem.
 
