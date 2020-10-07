@@ -27,15 +27,18 @@
 
 ***Transitions:***
 - Initial state: UP
-- Transition - UP -> DOWN: tBt<1s
+- Transition - UP --> DOWN: tBt<1s
 - Transition - DOWN --> UP: tBt<1s
 - Transition - DOWN --> FALL: tBt>=1s && i>0.0
 - Transition - UP --> RISE: tBt>=1s && i<1.0
-- Transition - UP --> RISE: tBt>=1s && i<1.0 
 - Transition - FALL --> MIN: Bt==1 && i==0.0
 - Transition - RISE --> MAX: Bt==1 && i==1.0
 - Transition - MAX --> DOWN: Bt==0 && i==1.0
 - Transition - MIN --> UP: Bt==0 && i==0.0
+- Transition - RISE --> UP: Button release && i<1.0
+- Transition - FALL --> DOWN: Button release && i>0.0
+- Transition - RISE --> RISE: Bt = 1 && i < 1.0 while i = i - 0.05 every second
+- Transition - FALL --> FALL: Bt = 1 && i > 0.0 while i = i + 0.05 every second
 
 ***Acronyms:***
 - Bt = Buttom
