@@ -2,64 +2,63 @@
 #include <iostream>
 #include <string>
 
-DigitalOut redLed(p5); // Orange Led
+DigitalOut redLed(p5);
 DigitalOut blueLed(p6);
 InterruptIn button(p7);
 PwmOut intensity(p8);
 Timeout pressingTimeout, ledTimeout;
 
-enum States { 
-    UP, 
-    DOWN, 
-    RISE, 
-    FALL, 
-    MAX,
-    MIN, 
+enum States 
+{ 
+    UP, DOWN,  RISE,  FALL,  MAX, MIN, 
 };
 
 States state = UP;
-bool pressFlag = false;
-float ledIntensity;
+bool Flag = false;
+float ledOsc;
 float blinkPeriod;
+void valorInicial();
+void start();
+void stop();
+void estado();
+void piscar();
+string desc();
 
-void setInitialValues();
-void startButtonPress();
-void finishButtonPress();
-void handleStates();
-void blink();
-string handleStateName();
 
-int main() {
-    setInitialValues();
-    button.rise(&startButtonPress);
-    button.fall(&finishButtonPress);
-    
+int main()
+{
+    valorInicial();
+    button.rise(&start);
+    button.fall(&stop);
     while(1) {
-        intensity = ledIntensity;
-        std::cout << "State: " << handleStateName() << "\n";
-        printf("Intensity: %.2f\n", ledIntensity);
+        intensity = ledOsc;
+        std::cout << "State: " << desc() << "\n";
+        printf("Intensity: %.2f\n", ledOsc);
         wait_ms(100);
-    }
-}
+ }}
 
-void setInitialValues() {
+void valorInicial() 
+{
     blueLed = 1;
     redLed = 0;
-    ledIntensity = 0.5;
+    ledOsc = 0.5;
 }
 
-void startButtonPress() {
-    pressFlag = true;
-    pressingTimeout.attach(&handleStates, 1.0);
+void start() {
+    Flag = true;
+    pressingTimeout.attach(&estado, 1.0);
 }
 
-void finishButtonPress() {
-    pressFlag = false;
-    switch (state) {
+void stop()
+ {
+    Flag = false;
+    switch (state)
+ {
         case DOWN:
         case RISE:
         case MIN:
-            if (ledIntensity < 1) {
+            if (ledOsc < 1)
+            {
                 blueLed = 1;
                 redLed = 0;
                 state = UP;
@@ -68,7 +67,8 @@ void finishButtonPress() {
         case UP:
         case FALL:
         case MAX:
-            if (ledIntensity > 0) {
+            if (ledOsc > 0)
+           {
                 blueLed = 0;
                 redLed = 1;
                 state = DOWN;
@@ -76,45 +76,49 @@ void finishButtonPress() {
             break;
     }
 }
+void estado()
+{
+    pressingTimeout.attach(&estado, 1.0);
+    ledTimeout.attach(&piscar, 0.2);
 
-void handleStates(){
-    pressingTimeout.attach(&handleStates, 1.0);
-    ledTimeout.attach(&blink, 0.2);
-
-        if (pressFlag) {
-            switch (state) {
+        if (pressFlag)
+        {
+            switch (state) 
+            {
                 case RISE:
-                    if (ledIntensity == 1) state = MAX;
-                    else ledIntensity += 0.05;
+                    if (ledOsc == 1) state = MAX;
+                    else ledOsc += 0.05;
                     break;
                 case FALL:
-                    if (ledIntensity == 0) state = MIN;
-                    else ledIntensity -= 0.05;
+                    if (ledOsc == 0) state = MIN;
+                    else ledOsc -= 0.05;
                     break;
                 case UP:
                     state = RISE;
-                    ledIntensity += 0.05;
+                    ledOsc += 0.05;
                     break;
                 case DOWN:
                     state = FALL;
-                    ledIntensity -= 0.05;
+                    ledOsc -= 0.05;
                     break;
                 default:
                     break;
             }
-
-            if (ledIntensity >= 1) {
+            if (ledOsc >= 1) 
+            {
                 state = MAX;
-                ledIntensity = 1;
-            } else if (ledIntensity <= 0) {
+                ledOsc = 1;
+            } else if (ledOsc <= 0) 
+              {
                 state = MIN;
-                ledIntensity = 0;
-            }
+                ledOsc = 0;
+              }
     }
 }
-
-void blink(){
-    switch(state) {
+void blink()
+{
+    switch(state)
+    {
         case MIN:
         case FALL:
             redLed = !redLed;
@@ -127,16 +131,17 @@ void blink(){
             break;
     }
 
-    switch(state) {
+    switch(state) 
+    {
         case MAX:
         case MIN:
             blinkPeriod = 0.1;
             break;
         case RISE:
-            blinkPeriod = 0.2 * (1 + ledIntensity / 0.05);
+            blinkPeriod = 0.2 * (1 + ledOsc / 0.05);
             break;
         case FALL:
-            blinkPeriod = (0.2 * (ledIntensity / 0.05 - 1));
+            blinkPeriod = (0.2 * (ledOsc / 0.05 - 1));
             break;
         default:
             break;
@@ -144,15 +149,23 @@ void blink(){
     ledTimeout.attach(&blink, blinkPeriod);
 }
 
-string handleStateName() {
-    string stateName;
-    switch(state) {
-        case UP: stateName = "UP"; break;
-        case DOWN: stateName = "DOWN"; break;
-        case RISE: stateName = "RISING"; break;
-        case FALL: stateName = "FALLING"; break;
-        case MAX: stateName = "MAX"; break;
-        case MIN: stateName = "MIN"; break;
+string desc() 
+{
+    string final;
+    switch(state) 
+    {
+        case UP: 
+        state = "UP"; break;
+        case DOWN: 
+        state = "DOWN"; break;
+        case RISE: 
+        state = "RISING"; break;
+        case FALL: 
+        state = "FALLING"; break;
+        case MAX:
+        state = "MAX"; break;
+        case MIN:
+        state = "MIN"; break;
     }
-    return stateName;
+    return final;
 }
